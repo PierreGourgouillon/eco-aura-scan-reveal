@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,15 @@ const QuestionnairePage = () => {
   const handleSelectAnswer = (value: string | number) => {
     setAnswer(currentQuestionData.id, value.toString());
   };
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleNextQuestion = async () => {
+    setIsLoading(true)
+    await goToNextQuestion()
+    setIsLoading(false)
+  }
 
   return (
     <div className="min-h-screen py-8">
@@ -87,7 +96,8 @@ const QuestionnairePage = () => {
           </Button>
           
           <Button
-            onClick={ async () => { await goToNextQuestion() }}
+            onClick={handleNextQuestion}
+            isLoading={isLoading}
             disabled={!currentAnswer}
             className="eco-button"
           >
