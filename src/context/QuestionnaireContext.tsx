@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { TreeDeciduous, TreePalm, Leaf } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Advice } from "@/components/AdviceSection";
 
 // Define the questions and answers
 export const questions = [
@@ -149,9 +150,9 @@ interface QuestionnaireContextType {
   calculateResults: () => void;
   results: {
     profile: typeof profiles[keyof typeof profiles] | null;
-    strengths: { text: string }[];
-    improvements: { text: string }[];
-    tips: { text: string }[];
+    strengths: Advice[];
+    improvements: Advice[];
+    tips: Advice[];
   };
 }
 
@@ -172,11 +173,16 @@ export const QuestionnaireProvider: React.FC<{ children: React.ReactNode }> = ({
   const [answers, setAnswers] = useState<Answers>({});
   const navigate = useNavigate();
   
-  const [results, setResults] = useState({
-    profile: null as typeof profiles[keyof typeof profiles] | null,
-    strengths: [] as { text: string }[],
-    improvements: [] as { text: string }[],
-    tips: [] as { text: string }[],
+  const [results, setResults] = useState<{
+    profile: typeof profiles[keyof typeof profiles] | null;
+    strengths: Advice[];
+    improvements: Advice[];
+    tips: Advice[];
+  }>({
+    profile: null,
+    strengths: [],
+    improvements: [],
+    tips: [],
   });
 
   const currentQuestionData = questions[currentQuestion];
@@ -189,11 +195,11 @@ export const QuestionnaireProvider: React.FC<{ children: React.ReactNode }> = ({
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
-  const goToNextQuestion = () => {
+  const goToNextQuestion = async () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
-      calculateResults();
+      await calculateResults();
       navigate("/results");
     }
   };
@@ -215,90 +221,83 @@ export const QuestionnaireProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const calculateResults = () => {
-    // Simple scoring logic based on answers
-    let score = 0;
-    const valueWeights: Record<string, number> = {
-      // Transport
-      car: 1, public: 3, mixed: 2, bike: 4,
-      // Food
-      meat: 1, moderate: 2, flexitarian: 3, vegan: 4,
-      // Energy
-      careless: 1, basic: 2, aware: 3, renewable: 4,
-      // Shopping
-      new: 1, mixed: 2, secondhand: 3, minimal: 4,
-      // Waste
-      notsorting: 1, basic: 2, advanced: 3, zerowaste: 4
-    };
-    
-    // Calculate score based on answers
-    Object.values(answers).forEach(value => {
-      score += valueWeights[value] || 0;
+  const calculateResults = async () => {
+    const userResponses = questions.map((q) => {
+      const answerValue = answers[q.id];
+      const selectedOption = q.options.find(opt => opt.value === answerValue);
+      return {
+        question: q.question,
+        answer: selectedOption?.text || "Aucune réponse",
+      };
     });
-    
-    // Normalize to 100
-    const normalizedScore = (score / (Object.keys(answers).length * 4)) * 100;
-    
-    // Determine profile
-    let profile;
-    if (normalizedScore < 50) {
-      profile = profiles["débutant"];
-    } else if (normalizedScore < 75) {
-      profile = profiles["modéré"];
-    } else {
-      profile = profiles["avancé"];
-    }
-    
-    // Extract strengths (highest scores)
-    const strengths = Object.entries(answers)
-      .filter(([_, value]) => valueWeights[value] >= 3)
-      .map(([questionId, _]) => {
-        const question = questions.find(q => q.id === questionId);
-        if (!question) return { text: "" };
-        
-        switch (questionId) {
-          case "transport": return { text: "Tes choix de mobilité sont excellents pour la planète !" };
-          case "food": return { text: "Ton alimentation est respectueuse de l'environnement" };
-          case "energy": return { text: "Ta gestion de l'énergie est exemplaire" };
-          case "shopping": return { text: "Tes habitudes de consommation sont responsables" };
-          case "waste": return { text: "Ta gestion des déchets est très avancée" };
-          default: return { text: "" };
-        }
-      })
-      .filter(item => item.text !== "");
-    
-    // Extract areas for improvement (lowest scores)
-    const improvements = Object.entries(answers)
-      .filter(([_, value]) => valueWeights[value] <= 2)
-      .map(([questionId, _]) => {
-        const question = questions.find(q => q.id === questionId);
-        if (!question) return { text: "" };
-        
-        switch (questionId) {
-          case "transport": return { text: "Essaie d'explorer des alternatives à la voiture quand c'est possible" };
-          case "food": return { text: "Réduire la consommation de produits animaux aurait un impact positif" };
-          case "energy": return { text: "Surveiller ta consommation d'énergie pourrait faire une grande différence" };
-          case "shopping": return { text: "Privilégier les achats d'occasion ou locaux réduirait ton empreinte" };
-          case "waste": return { text: "Améliorer ton tri et réduire tes déchets serait bénéfique" };
-          default: return { text: "" };
-        }
-      })
-      .filter(item => item.text !== "");
-    
-    // Generate general tips
-    const tips = [
-      { text: "Commence par un petit changement à la fois pour créer de nouvelles habitudes durables" },
-      { text: "Partage tes succès avec tes proches pour les inspirer à leur tour" },
-      { text: "Rejoins des groupes locaux d'éco-citoyens pour échanger et apprendre" }
-    ];
-    
+
+    const prompt = `
+Tu es un assistant expert en écologie.
+
+Voici les réponses d’un utilisateur à un questionnaire environnemental :
+${userResponses.map((r, i) => `${i + 1}. ${r.question}\nRéponse : ${r.answer}`).join("\n\n")}
+
+Analyse ces réponses et produis un **résultat au format JSON** structuré comme suit :
+
+{
+  "profile": {
+    "name": "Nom du profil",
+    "description": "Description du profil"
+  },
+  "strengths": ["Point fort 1", "Point fort 2", "Point fort 3"],
+  "improvements": ["Axe d'amélioration 1", "Axe 2", "Axe 3"],
+  "tips": ["Conseil 1", "Conseil 2", "Conseil 3"]
+}
+
+Ne donne que le JSON, sans texte avant ou après.
+Sois bienveillant et motivant.
+`;
+
+    try {
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama3-70b-8192",
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 800,
+        }),
+      });
+
+      const data = await res.json();
+      const raw = data.choices?.[0]?.message?.content || "";
+      const parsed = JSON.parse(raw);
+
     setResults({
-      profile,
-      strengths: strengths.length ? strengths : [{ text: "Tu es sur la bonne voie !" }],
-      improvements: improvements.length ? improvements : [{ text: "Continue comme ça !" }],
-      tips,
+      profile: {
+        name: parsed.profile.name,
+        description: parsed.profile.description,
+        icon: null,
+        score: 0,
+      },
+      strengths: parsed.strengths.map(text => ({ text, type: "strength" })),
+      improvements: parsed.improvements.map(text => ({ text, type: "improvement" })),
+      tips: parsed.tips.map(text => ({ text, type: "tip" })),
     });
-  };
+    } catch (error) {
+      console.error("Erreur IA :", error);
+      setResults({
+        profile: null,
+        strengths: [],
+        improvements: [],
+        tips: [{ text: "Impossible d'obtenir une analyse pour le moment.", type: "tip" }],
+      });
+    }
+  };  
 
   return (
     <QuestionnaireContext.Provider

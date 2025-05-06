@@ -50,7 +50,7 @@ const QuestionnairePage = () => {
         </div>
         <ProgressBar 
           currentStep={currentQuestion + 1} 
-          totalSteps={5} 
+          totalSteps={questions.length} 
           className="mb-4"
         />
         
@@ -87,7 +87,7 @@ const QuestionnairePage = () => {
           </Button>
           
           <Button
-            onClick={goToNextQuestion}
+            onClick={ async () => { await goToNextQuestion() }}
             disabled={!currentAnswer}
             className="eco-button"
           >

@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";

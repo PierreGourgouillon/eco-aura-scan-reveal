@@ -1,33 +1,27 @@
-
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
-import ProfileCard from "@/components/ProfileCard";
-import AdviceSection from "@/components/AdviceSection";
 import ShareSection from "@/components/ShareSection";
 import { useQuestionnaire } from "@/context/QuestionnaireContext";
 import Mascot from "@/components/Mascot";
+import AdviceSection from "@/components/AdviceSection";
 
 const ResultsPage = () => {
   const { results, isCompleted, resetQuestionnaire } = useQuestionnaire();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isCompleted && !results.profile) {
+    if (!isCompleted) {
       navigate("/questionnaire");
     }
-  }, [isCompleted, navigate, results.profile]);
+  }, [isCompleted, navigate]);
 
   const handleRestart = () => {
     resetQuestionnaire();
     navigate("/");
   };
-
-  if (!results.profile) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen py-8">
@@ -44,33 +38,33 @@ const ResultsPage = () => {
 
         <PageHeader 
           title="Tes résultats" 
-          subtitle="Voici ton profil écologique personnalisé"
+          subtitle="Voici ton analyse écologique personnalisée"
           showMascot={false}
         />
 
-        <ProfileCard profile={results.profile} className="mb-8" />
+        {results.profile && (
+          <div className="mb-8 p-4 bg-white rounded-lg shadow text-sm whitespace-pre-line">
+            <h3 className="text-lg font-bold text-eco-green mb-2">{results.profile.name}</h3>
+            <p>{results.profile.description}</p>
+          </div>
+        )}
 
         <AdviceSection
-          title="Tes points forts"
+          title="✅ Tes points forts"
           items={results.strengths}
           type="strengths"
         />
 
         <AdviceSection
-          title="Pistes d'amélioration"
+          title="⚠️ Pistes d'amélioration"
           items={results.improvements}
           type="improvements"
         />
 
         <AdviceSection
-          title="Conseils pratiques"
+          title="💡 Conseils pratiques"
           items={results.tips}
           type="tips"
-        />
-
-        <ShareSection 
-          profileName={results.profile.name} 
-          score={results.profile.score} 
         />
 
         <div className="mt-8 flex justify-center">
