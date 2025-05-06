@@ -26,25 +26,7 @@ const ProfileCard = ({ profile, className }: ProfileCardProps) => {
         <h3 className="text-2xl font-bold text-eco-teal mb-1">
           {profile.name}
         </h3>
-        
-        <div className="mb-4">
-          <div className="text-sm text-muted-foreground mb-2">Éco-Score</div>
-          <div className="flex items-center justify-center gap-1.5">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <div 
-                key={star}
-                className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  star <= Math.round(profile.score / 20) 
-                    ? "bg-eco-green text-white" 
-                    : "bg-eco-beige/50 text-muted-foreground"
-                }`}
-              >
-                {star}
-              </div>
-            ))}
-          </div>
-        </div>
-        
+                
         <p className="text-muted-foreground">
           {profile.description}
         </p>
