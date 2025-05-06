@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
-import { useQuestionnaire } from "@/context/QuestionnaireContext";
+import { questions, useQuestionnaire } from "@/context/QuestionnaireContext";
 import Mascot from "@/components/Mascot";
 
 const QuestionnairePage = () => {
@@ -33,25 +33,24 @@ const QuestionnairePage = () => {
   return (
     <div className="min-h-screen py-8">
       <div className="container max-w-md mx-auto px-4">
-        <ProgressBar 
-          currentStep={currentQuestion + 1} 
-          totalSteps={5} 
-          className="mb-8"
-        />
-
-        <div className="mb-6 relative">
-          <div className="absolute -top-12 right-0">
-            <Mascot 
-              size={32} 
-              mood="thinking" 
-              withText={
-                currentQuestion === 0 
-                ? "Salut ! Parlons de tes habitudes..." 
-                : "Très bien, continuons..."
-              } 
-            />
-          </div>
+        <div className="relative mb-8 mt-10">
+              <ProgressBar 
+                currentStep={currentQuestion + 1} 
+                totalSteps={questions.length} 
+              />
+              <div className="absolute -top-10 right-0 z-10">
+                <Mascot 
+                  size={32} 
+                  mood="thinking" 
+                  withText={
+                    currentQuestion === 0 
+                    ? "Salut ! Parlons de tes habitudes..." 
+                    : "Très bien, continuons..."
+                  } 
+                />
+              </div>
         </div>
+
         
         <PageHeader 
           title="Ton profil écologique" 
