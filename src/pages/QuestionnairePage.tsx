@@ -33,25 +33,22 @@ const QuestionnairePage = () => {
   return (
     <div className="min-h-screen py-8">
       <div className="container max-w-md mx-auto px-4">
+        <div className="flex justify-center">
+          <Mascot 
+            size={32} 
+            mood="thinking" 
+            withText={
+              currentQuestion === 0 
+              ? "Salut ! Parlons de tes habitudes..." 
+              : "Très bien, continuons..."
+            } 
+          />
+        </div>
         <ProgressBar 
           currentStep={currentQuestion + 1} 
           totalSteps={5} 
-          className="mb-8"
+          className="mb-4"
         />
-
-        <div className="mb-6 relative">
-          <div className="absolute -top-12 right-0">
-            <Mascot 
-              size={32} 
-              mood="thinking" 
-              withText={
-                currentQuestion === 0 
-                ? "Salut ! Parlons de tes habitudes..." 
-                : "Très bien, continuons..."
-              } 
-            />
-          </div>
-        </div>
         
         <PageHeader 
           title="Ton profil écologique" 
