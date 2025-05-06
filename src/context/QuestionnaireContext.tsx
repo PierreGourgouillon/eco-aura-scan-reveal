@@ -55,6 +55,56 @@ export const questions = [
       { id: "w4", text: "Je tends vers zéro déchet", value: "zerowaste" },
     ],
   },
+  {
+    id: "water",
+    question: "Quelle est ta gestion de l'eau ?",
+    options: [
+      { id: "wa1", text: "Je laisse couler l'eau sans y penser", value: "careless" },
+      { id: "wa2", text: "J'évite de gaspiller l'eau", value: "basic" },
+      { id: "wa3", text: "Je récupère l'eau ou optimise ma consommation", value: "aware" },
+      { id: "wa4", text: "J’utilise des dispositifs pour économiser l’eau", value: "eco" },
+    ],
+  },
+  {
+    id: "digital",
+    question: "Quel est ton usage du numérique ?",
+    options: [
+      { id: "d1", text: "Je ne me préoccupe pas de mon usage", value: "careless" },
+      { id: "d2", text: "J’éteins mes appareils la nuit", value: "basic" },
+      { id: "d3", text: "Je limite mes mails/stockages inutiles", value: "aware" },
+      { id: "d4", text: "J’optimise mes outils et mes habitudes numériques", value: "eco" },
+    ],
+  },
+  {
+    id: "clothing",
+    question: "Comment gères-tu ton habillement ?",
+    options: [
+      { id: "cl1", text: "J’achète beaucoup de vêtements neufs", value: "fastfashion" },
+      { id: "cl2", text: "J’achète moins souvent mais toujours du neuf", value: "moderate" },
+      { id: "cl3", text: "Je mixe neuf et friperies", value: "mixed" },
+      { id: "cl4", text: "Je consomme peu ou en seconde main", value: "eco" },
+    ],
+  },
+  {
+    id: "local",
+    question: "Consommes-tu local ?",
+    options: [
+      { id: "lo1", text: "Je ne fais pas attention", value: "none" },
+      { id: "lo2", text: "J’achète local de temps en temps", value: "occasionally" },
+      { id: "lo3", text: "Je privilégie souvent les circuits courts", value: "frequent" },
+      { id: "lo4", text: "Je ne consomme presque que local", value: "always" },
+    ],
+  },
+  {
+    id: "activism",
+    question: "T’impliques-tu dans des actions écologiques ?",
+    options: [
+      { id: "a1", text: "Pas du tout", value: "none" },
+      { id: "a2", text: "Je signe des pétitions ou partage des infos", value: "light" },
+      { id: "a3", text: "Je participe à des actions locales", value: "active" },
+      { id: "a4", text: "Je suis très engagé·e dans la cause", value: "committed" },
+    ],
+  },
 ];
 
 // Define profiles
