@@ -6,6 +6,7 @@ import PageHeader from "@/components/PageHeader";
 import ShareSection from "@/components/ShareSection";
 import { useQuestionnaire } from "@/context/QuestionnaireContext";
 import Mascot from "@/components/Mascot";
+import AdviceSection from "@/components/AdviceSection";
 
 const ResultsPage = () => {
   const { results, isCompleted, resetQuestionnaire } = useQuestionnaire();
@@ -41,13 +42,30 @@ const ResultsPage = () => {
           showMascot={false}
         />
 
-        {results.tips[0]?.text ? (
-          <div className="bg-white rounded-xl shadow p-6 whitespace-pre-line text-gray-800 text-sm">
-            {results.tips[0].text}
+        {results.profile && (
+          <div className="mb-8 p-4 bg-white rounded-lg shadow text-sm whitespace-pre-line">
+            <h3 className="text-lg font-bold text-eco-green mb-2">{results.profile.name}</h3>
+            <p>{results.profile.description}</p>
           </div>
-        ) : (
-          <p>Chargement de ton analyse...</p>
         )}
+
+        <AdviceSection
+          title="✅ Tes points forts"
+          items={results.strengths}
+          type="strengths"
+        />
+
+        <AdviceSection
+          title="⚠️ Pistes d'amélioration"
+          items={results.improvements}
+          type="improvements"
+        />
+
+        <AdviceSection
+          title="💡 Conseils pratiques"
+          items={results.tips}
+          type="tips"
+        />
 
         <div className="mt-8 flex justify-center">
           <Button

@@ -2,6 +2,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { TreeDeciduous, TreePalm, Leaf } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Advice } from "@/components/AdviceSection";
 
 // Define the questions and answers
 export const questions = [
@@ -149,9 +150,9 @@ interface QuestionnaireContextType {
   calculateResults: () => void;
   results: {
     profile: typeof profiles[keyof typeof profiles] | null;
-    strengths: { text: string }[];
-    improvements: { text: string }[];
-    tips: { text: string }[];
+    strengths: Advice[];
+    improvements: Advice[];
+    tips: Advice[];
   };
 }
 
@@ -172,11 +173,16 @@ export const QuestionnaireProvider: React.FC<{ children: React.ReactNode }> = ({
   const [answers, setAnswers] = useState<Answers>({});
   const navigate = useNavigate();
   
-  const [results, setResults] = useState({
-    profile: null as typeof profiles[keyof typeof profiles] | null,
-    strengths: [] as { text: string }[],
-    improvements: [] as { text: string }[],
-    tips: [] as { text: string }[],
+  const [results, setResults] = useState<{
+    profile: typeof profiles[keyof typeof profiles] | null;
+    strengths: Advice[];
+    improvements: Advice[];
+    tips: Advice[];
+  }>({
+    profile: null,
+    strengths: [],
+    improvements: [],
+    tips: [],
   });
 
   const currentQuestionData = questions[currentQuestion];
@@ -224,34 +230,41 @@ export const QuestionnaireProvider: React.FC<{ children: React.ReactNode }> = ({
         answer: selectedOption?.text || "Aucune réponse",
       };
     });
-  
+
     const prompt = `
-  Tu es un assistant expert en écologie.
-  
-  Voici les réponses d’un utilisateur à un questionnaire environnemental :
-  ${userResponses.map((r, i) => `${i + 1}. ${r.question}\nRéponse : ${r.answer}`).join("\n\n")}
-  
-  Analyse ces réponses et produis :
-  - 🧬 Un profil écologique (titre et description)
-  - ✅ 3 points forts
-  - ⚠️ 3 axes d'amélioration
-  - 💡 3 à 5 conseils personnalisés
-  
-  Sois bienveillant, positif et motivant.
-  `;
-  
+Tu es un assistant expert en écologie.
+
+Voici les réponses d’un utilisateur à un questionnaire environnemental :
+${userResponses.map((r, i) => `${i + 1}. ${r.question}\nRéponse : ${r.answer}`).join("\n\n")}
+
+Analyse ces réponses et produis un **résultat au format JSON** structuré comme suit :
+
+{
+  "profile": {
+    "name": "Nom du profil",
+    "description": "Description du profil"
+  },
+  "strengths": ["Point fort 1", "Point fort 2", "Point fort 3"],
+  "improvements": ["Axe d'amélioration 1", "Axe 2", "Axe 3"],
+  "tips": ["Conseil 1", "Conseil 2", "Conseil 3"]
+}
+
+Ne donne que le JSON, sans texte avant ou après.
+Sois bienveillant et motivant.
+`;
+
     try {
-      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
-          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: 'llama3-70b-8192',
+          model: "llama3-70b-8192",
           messages: [
             {
-              role: 'user',
+              role: "user",
               content: prompt,
             },
           ],
@@ -259,28 +272,32 @@ export const QuestionnaireProvider: React.FC<{ children: React.ReactNode }> = ({
           max_tokens: 800,
         }),
       });
-  
+
       const data = await res.json();
-      const iaText = data.choices?.[0]?.message?.content || "Analyse indisponible.";
-  
-      setResults({
-        profile: null,
-        strengths: [],
-        improvements: [],
-        tips: [{ text: iaText }],
-      });
+      const raw = data.choices?.[0]?.message?.content || "";
+      const parsed = JSON.parse(raw);
+
+    setResults({
+      profile: {
+        name: parsed.profile.name,
+        description: parsed.profile.description,
+        icon: null,
+        score: 0,
+      },
+      strengths: parsed.strengths.map(text => ({ text, type: "strength" })),
+      improvements: parsed.improvements.map(text => ({ text, type: "improvement" })),
+      tips: parsed.tips.map(text => ({ text, type: "tip" })),
+    });
     } catch (error) {
-      console.error("Erreur lors de l'appel à l'IA :", error);
+      console.error("Erreur IA :", error);
       setResults({
         profile: null,
         strengths: [],
         improvements: [],
-        tips: [{ text: "Impossible d'obtenir une analyse pour le moment." }],
+        tips: [{ text: "Impossible d'obtenir une analyse pour le moment.", type: "tip" }],
       });
     }
-  };
-  
-  
+  };  
 
   return (
     <QuestionnaireContext.Provider
