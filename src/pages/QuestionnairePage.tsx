@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
 import QuestionCard from "@/components/QuestionCard";
@@ -26,6 +26,10 @@ const QuestionnairePage = () => {
     return navigate("/");
   }
 
+  const handleMoveHome = () => {
+    return navigate("/");
+  };
+
   const handleSelectAnswer = (value: string | number) => {
     setAnswer(currentQuestionData.id, value.toString());
   };
@@ -33,24 +37,22 @@ const QuestionnairePage = () => {
   return (
     <div className="min-h-screen py-8">
       <div className="container max-w-md mx-auto px-4">
-        <div className="relative mb-8 mt-10">
-              <ProgressBar 
-                currentStep={currentQuestion + 1} 
-                totalSteps={questions.length} 
-              />
-              <div className="absolute -top-10 right-0 z-10">
-                <Mascot 
-                  size={32} 
-                  mood="thinking" 
-                  withText={
-                    currentQuestion === 0 
-                    ? "Salut ! Parlons de tes habitudes..." 
-                    : "Très bien, continuons..."
-                  } 
-                />
-              </div>
+        <div className="flex justify-center">
+          <Mascot 
+            size={32} 
+            mood="thinking" 
+            withText={
+              currentQuestion === 0 
+              ? "Salut ! Parlons de tes habitudes..." 
+              : "Très bien, continuons..."
+            } 
+          />
         </div>
-
+        <ProgressBar 
+          currentStep={currentQuestion + 1} 
+          totalSteps={5} 
+          className="mb-4"
+        />
         
         <PageHeader 
           title="Ton profil écologique" 
@@ -75,7 +77,15 @@ const QuestionnairePage = () => {
             <ArrowLeft size={18} className="mr-2" />
             Précédent
           </Button>
-
+          
+          <Button
+            onClick={handleMoveHome}
+            variant="outline"
+            className="px-4 py-2"
+          >
+            <Home size={18} />
+          </Button>
+          
           <Button
             onClick={goToNextQuestion}
             disabled={!currentAnswer}

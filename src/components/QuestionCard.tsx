@@ -40,11 +40,11 @@ const QuestionCard = ({
           >
             <div className="w-6 h-6 flex-shrink-0">
               {selectedAnswer === option.value ? (
-                <div className="rounded-full bg-eco-green text-white flex items-center justify-center">
+                <div className="rounded-full w-6 h-6 bg-eco-green text-white flex items-center justify-center">
                   <Check size={16} />
                 </div>
               ) : (
-                <Circle className="text-muted-foreground" size={20} />
+                <Circle className="text-muted-foreground" size={24} />
               )}
             </div>
             <span>{option.text}</span>
