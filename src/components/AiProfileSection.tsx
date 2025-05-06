@@ -1,9 +1,15 @@
 
 import React, { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const AiProfileSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate()
+
+  const handleQuizz =  () => {
+    navigate("/questionnaire")
+  }
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -48,7 +54,6 @@ const AiProfileSection: React.FC = () => {
               <div className="w-24 h-24 bg-white/10 rounded-full mx-auto flex items-center justify-center mb-4">
                 <span className="text-5xl">🌱</span>
               </div>
-              <p className="font-medium text-eco-lightest">Ton score: 65/100</p>
             </div>
           </div>
           <div className="p-8 md:w-2/3">
@@ -76,7 +81,10 @@ const AiProfileSection: React.FC = () => {
               </ul>
             </div>
             <div id="start-scan" className="text-center mt-4">
-              <Button className="eco-button">
+              <Button 
+                className="eco-button"
+                onClick={handleQuizz}
+              >
                 Découvre ton propre profil
               </Button>
             </div>

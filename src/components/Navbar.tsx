@@ -2,10 +2,16 @@
 import React, { useState, useEffect } from "react";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate()
+
+  const handleQuizz = () => {
+    navigate("/questionnaire")
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,8 +75,8 @@ const Navbar: React.FC = () => {
               Profils AI
             </button>
             <Button
-              onClick={() => scrollToSection("start-scan")}
-              className="eco-button"
+                onClick={handleQuizz}
+                className="eco-button"
             >
               Commencer le scan
             </Button>
@@ -132,7 +138,7 @@ const Navbar: React.FC = () => {
             </button>
             <div className="pt-2">
               <Button
-                onClick={() => scrollToSection("start-scan")}
+                onClick={handleQuizz}
                 className="eco-button w-full"
               >
                 Commencer le scan

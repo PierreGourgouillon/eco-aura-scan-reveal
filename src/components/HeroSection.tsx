@@ -34,7 +34,7 @@ const HeroSection: React.FC = () => {
         <Button onClick={handleStart} className="eco-button text-lg">
           Commencer le scan
         </Button>
-        <div className="mt-16 animate-bounce-subtle">
+        <div className="mt-16 animate-bounce-subtle flex justify-center">
           <button
             onClick={() => scrollToSection("why-ecoscan")}
             className="flex flex-col items-center text-eco-medium hover:text-eco-dark transition-colors"

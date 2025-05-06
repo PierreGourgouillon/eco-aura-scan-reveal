@@ -70,6 +70,11 @@ export default {
 					beige: '#F2E8CF',
 					offwhite: '#F7F7F2',
 					teal: '#4C8577',
+					lightest: "#D8F3DC",
+					lighter: "#95D5B2",
+					light: "#74C69D",
+					dark: "#2D6A4F",
+					medium: "#40916C"
 				}
 			},
 			fontFamily: {

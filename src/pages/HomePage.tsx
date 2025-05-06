@@ -5,7 +5,6 @@ import BenefitsSection from "@/components/BenefitsSection";
 import WhyEcoscanSection from "@/components/WhyEcoscanSection";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import AiProfileSection from "@/components/AiProfileSection";
-import HackathonSection from "@/components/HackathonSection";
 import FooterSection from "@/components/FooterSection";
 
 const Index = () => {
@@ -40,7 +39,6 @@ const Index = () => {
       <WhyEcoscanSection />
       <HowItWorksSection />
       <AiProfileSection />
-      <HackathonSection />
       <FooterSection />
     </div>
   );

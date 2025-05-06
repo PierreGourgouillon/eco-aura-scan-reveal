@@ -70,7 +70,7 @@ const HowItWorksSection: React.FC = () => {
             <Step
               number="1"
               title="Réponds à quelques questions"
-              description="5-6 questions simples sur ton alimentation, tes habitudes de transport et ta consommation."
+              description="10 questions simples sur ton alimentation, tes habitudes de transport et ta consommation."
               icon={<FileQuestion size={36} />}
               delay="0ms"
             />

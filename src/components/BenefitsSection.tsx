@@ -28,7 +28,7 @@ const BenefitsSection: React.FC = () => {
           <Benefit
             icon={<Clock size={48} />}
             title="Rapide"
-            description="5 questions, 2 minutes de ton temps, et tu découvres ton profil écologique."
+            description="10 questions, 2 minutes de ton temps, et tu découvres ton profil écologique."
           />
           <Benefit
             icon={<CircleCheck size={48} />}
