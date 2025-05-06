@@ -50,7 +50,7 @@ const QuestionnairePage = () => {
         </div>
         <ProgressBar 
           currentStep={currentQuestion + 1} 
-          totalSteps={5} 
+          totalSteps={questions.length} 
           className="mb-4"
         />
         
