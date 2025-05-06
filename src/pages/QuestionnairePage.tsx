@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
 import QuestionCard from "@/components/QuestionCard";
 import ProgressBar from "@/components/ProgressBar";
-import { useQuestionnaire } from "@/context/QuestionnaireContext";
+import { questions, useQuestionnaire } from "@/context/QuestionnaireContext";
 import Mascot from "@/components/Mascot";
 
 const QuestionnairePage = () => {
