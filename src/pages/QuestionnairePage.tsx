@@ -87,7 +87,7 @@ const QuestionnairePage = () => {
           </Button>
           
           <Button
-            onClick={goToNextQuestion}
+            onClick={ async () => { await goToNextQuestion() }}
             disabled={!currentAnswer}
             className="eco-button"
           >

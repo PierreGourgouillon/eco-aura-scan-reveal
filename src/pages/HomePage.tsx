@@ -8,54 +8,9 @@ import Mascot from "@/components/Mascot";
 const HomePage = () => {
   const navigate = useNavigate();
 
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
-
-  const getGroqResponse = async (message: string): Promise<string> => {
-    const apiKey = import.meta.env.VITE_GROQ_API_KEY;
-  
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'llama3-70b-8192',
-        messages: [
-          {
-            role: 'user',
-            content: message,
-          },
-        ],
-        temperature: 0.7,
-      }),
-    });
-  
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Erreur Groq API: ${error}`);
-    }
-  
-    const data = await response.json();
-    return data.choices[0].message.content;
-  };  
-
   const handleStart = () => {
     navigate("/questionnaire");
   };
-
-  useEffect(() => {
-    const test = async () => {
-      try {
-        const response = await getGroqResponse("Salut ChatGPT, ça va ?");
-        console.log("Réponse de ChatGPT :", response);
-      } catch (error) {
-        console.error("Erreur lors de l'appel API ChatGPT :", error);
-      }
-    };
-
-    test();
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col justify-center">

@@ -189,11 +189,11 @@ export const QuestionnaireProvider: React.FC<{ children: React.ReactNode }> = ({
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
-  const goToNextQuestion = () => {
+  const goToNextQuestion = async () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
-      calculateResults();
+      await calculateResults();
       navigate("/results");
     }
   };
@@ -215,90 +215,72 @@ export const QuestionnaireProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  const calculateResults = () => {
-    // Simple scoring logic based on answers
-    let score = 0;
-    const valueWeights: Record<string, number> = {
-      // Transport
-      car: 1, public: 3, mixed: 2, bike: 4,
-      // Food
-      meat: 1, moderate: 2, flexitarian: 3, vegan: 4,
-      // Energy
-      careless: 1, basic: 2, aware: 3, renewable: 4,
-      // Shopping
-      new: 1, mixed: 2, secondhand: 3, minimal: 4,
-      // Waste
-      notsorting: 1, basic: 2, advanced: 3, zerowaste: 4
-    };
-    
-    // Calculate score based on answers
-    Object.values(answers).forEach(value => {
-      score += valueWeights[value] || 0;
+  const calculateResults = async () => {
+    const userResponses = questions.map((q) => {
+      const answerValue = answers[q.id];
+      const selectedOption = q.options.find(opt => opt.value === answerValue);
+      return {
+        question: q.question,
+        answer: selectedOption?.text || "Aucune réponse",
+      };
     });
-    
-    // Normalize to 100
-    const normalizedScore = (score / (Object.keys(answers).length * 4)) * 100;
-    
-    // Determine profile
-    let profile;
-    if (normalizedScore < 50) {
-      profile = profiles["débutant"];
-    } else if (normalizedScore < 75) {
-      profile = profiles["modéré"];
-    } else {
-      profile = profiles["avancé"];
+  
+    const prompt = `
+  Tu es un assistant expert en écologie.
+  
+  Voici les réponses d’un utilisateur à un questionnaire environnemental :
+  ${userResponses.map((r, i) => `${i + 1}. ${r.question}\nRéponse : ${r.answer}`).join("\n\n")}
+  
+  Analyse ces réponses et produis :
+  - 🧬 Un profil écologique (titre et description)
+  - ✅ 3 points forts
+  - ⚠️ 3 axes d'amélioration
+  - 💡 3 à 5 conseils personnalisés
+  
+  Sois bienveillant, positif et motivant.
+  `;
+  
+    try {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama3-70b-8192',
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 800,
+        }),
+      });
+  
+      const data = await res.json();
+      const iaText = data.choices?.[0]?.message?.content || "Analyse indisponible.";
+  
+      setResults({
+        profile: null,
+        strengths: [],
+        improvements: [],
+        tips: [{ text: iaText }],
+      });
+    } catch (error) {
+      console.error("Erreur lors de l'appel à l'IA :", error);
+      setResults({
+        profile: null,
+        strengths: [],
+        improvements: [],
+        tips: [{ text: "Impossible d'obtenir une analyse pour le moment." }],
+      });
     }
-    
-    // Extract strengths (highest scores)
-    const strengths = Object.entries(answers)
-      .filter(([_, value]) => valueWeights[value] >= 3)
-      .map(([questionId, _]) => {
-        const question = questions.find(q => q.id === questionId);
-        if (!question) return { text: "" };
-        
-        switch (questionId) {
-          case "transport": return { text: "Tes choix de mobilité sont excellents pour la planète !" };
-          case "food": return { text: "Ton alimentation est respectueuse de l'environnement" };
-          case "energy": return { text: "Ta gestion de l'énergie est exemplaire" };
-          case "shopping": return { text: "Tes habitudes de consommation sont responsables" };
-          case "waste": return { text: "Ta gestion des déchets est très avancée" };
-          default: return { text: "" };
-        }
-      })
-      .filter(item => item.text !== "");
-    
-    // Extract areas for improvement (lowest scores)
-    const improvements = Object.entries(answers)
-      .filter(([_, value]) => valueWeights[value] <= 2)
-      .map(([questionId, _]) => {
-        const question = questions.find(q => q.id === questionId);
-        if (!question) return { text: "" };
-        
-        switch (questionId) {
-          case "transport": return { text: "Essaie d'explorer des alternatives à la voiture quand c'est possible" };
-          case "food": return { text: "Réduire la consommation de produits animaux aurait un impact positif" };
-          case "energy": return { text: "Surveiller ta consommation d'énergie pourrait faire une grande différence" };
-          case "shopping": return { text: "Privilégier les achats d'occasion ou locaux réduirait ton empreinte" };
-          case "waste": return { text: "Améliorer ton tri et réduire tes déchets serait bénéfique" };
-          default: return { text: "" };
-        }
-      })
-      .filter(item => item.text !== "");
-    
-    // Generate general tips
-    const tips = [
-      { text: "Commence par un petit changement à la fois pour créer de nouvelles habitudes durables" },
-      { text: "Partage tes succès avec tes proches pour les inspirer à leur tour" },
-      { text: "Rejoins des groupes locaux d'éco-citoyens pour échanger et apprendre" }
-    ];
-    
-    setResults({
-      profile,
-      strengths: strengths.length ? strengths : [{ text: "Tu es sur la bonne voie !" }],
-      improvements: improvements.length ? improvements : [{ text: "Continue comme ça !" }],
-      tips,
-    });
   };
+  
+  
 
   return (
     <QuestionnaireContext.Provider

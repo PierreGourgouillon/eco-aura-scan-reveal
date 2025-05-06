@@ -1,11 +1,8 @@
-
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
-import ProfileCard from "@/components/ProfileCard";
-import AdviceSection from "@/components/AdviceSection";
 import ShareSection from "@/components/ShareSection";
 import { useQuestionnaire } from "@/context/QuestionnaireContext";
 import Mascot from "@/components/Mascot";
@@ -15,19 +12,15 @@ const ResultsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isCompleted && !results.profile) {
+    if (!isCompleted) {
       navigate("/questionnaire");
     }
-  }, [isCompleted, navigate, results.profile]);
+  }, [isCompleted, navigate]);
 
   const handleRestart = () => {
     resetQuestionnaire();
     navigate("/");
   };
-
-  if (!results.profile) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen py-8">
@@ -44,34 +37,17 @@ const ResultsPage = () => {
 
         <PageHeader 
           title="Tes résultats" 
-          subtitle="Voici ton profil écologique personnalisé"
+          subtitle="Voici ton analyse écologique personnalisée"
           showMascot={false}
         />
 
-        <ProfileCard profile={results.profile} className="mb-8" />
-
-        <AdviceSection
-          title="Tes points forts"
-          items={results.strengths}
-          type="strengths"
-        />
-
-        <AdviceSection
-          title="Pistes d'amélioration"
-          items={results.improvements}
-          type="improvements"
-        />
-
-        <AdviceSection
-          title="Conseils pratiques"
-          items={results.tips}
-          type="tips"
-        />
-
-        <ShareSection 
-          profileName={results.profile.name} 
-          score={results.profile.score} 
-        />
+        {results.tips[0]?.text ? (
+          <div className="bg-white rounded-xl shadow p-6 whitespace-pre-line text-gray-800 text-sm">
+            {results.tips[0].text}
+          </div>
+        ) : (
+          <p>Chargement de ton analyse...</p>
+        )}
 
         <div className="mt-8 flex justify-center">
           <Button
