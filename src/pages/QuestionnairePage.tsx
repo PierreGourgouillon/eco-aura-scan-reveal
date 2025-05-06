@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
 import QuestionCard from "@/components/QuestionCard";
@@ -25,6 +25,10 @@ const QuestionnairePage = () => {
   if (!currentQuestionData) {
     return navigate("/");
   }
+
+  const handleMoveHome = () => {
+    return navigate("/");
+  };
 
   const handleSelectAnswer = (value: string | number) => {
     setAnswer(currentQuestionData.id, value.toString());
@@ -73,7 +77,15 @@ const QuestionnairePage = () => {
             <ArrowLeft size={18} className="mr-2" />
             Précédent
           </Button>
-
+          
+          <Button
+            onClick={handleMoveHome}
+            variant="outline"
+            className="px-4 py-2"
+          >
+            <Home size={18} />
+          </Button>
+          
           <Button
             onClick={goToNextQuestion}
             disabled={!currentAnswer}
